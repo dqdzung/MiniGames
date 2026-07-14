@@ -22,6 +22,7 @@ const BOMB_CHANCE = 0.14;
 const GRAVITY = 520 * S; // px/s^2 in scaled space
 const FRUIT_R = 36 * S;  // slice hit radius (forgiving)
 const LIVES = 3;
+const GAME_SECONDS = 120; // 2-minute round
 
 // true if segment A→B passes within r of circle center C (distance²-to-segment test)
 function segHitsCircle(ax, ay, bx, by, cx, cy, r) {
@@ -44,6 +45,7 @@ class FruitSlicer extends Phaser.Scene {
     this.lastX = null;
     this.sinceSpawn = 0;
     this.spawnEvery = 1100; // ms, shrinks with score
+    this.timeLeft = GAME_SECONDS;
 
     this.scoreText = this.add.text(16 * S, 12 * S, "Score: 0", {
       fontSize: px(20), color: "#ffd166", fontStyle: "bold", padding: { y: 6 },
@@ -51,11 +53,28 @@ class FruitSlicer extends Phaser.Scene {
     this.livesText = this.add.text(GAME_W - 16 * S, 12 * S, "❤️".repeat(this.lives), {
       fontSize: px(20), padding: { y: 6 },
     }).setOrigin(1, 0);
+    this.timerText = this.add.text(GAME_W / 2, 12 * S, this.fmtTime(this.timeLeft), {
+      fontSize: px(20), color: "#fff", fontStyle: "bold", padding: { y: 6 },
+    }).setOrigin(0.5, 0);
+    this.timerEvent = this.time.addEvent({ delay: 1000, loop: true, callback: () => this.tick() });
+
     this.add.text(GAME_W / 2, GAME_H - 22 * S, "Swipe to slice — avoid 💣", {
       fontSize: px(13), color: "#889", padding: { y: 4 },
     }).setOrigin(0.5);
 
     this.trailGfx = this.add.graphics();
+  }
+
+  fmtTime(s) {
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  }
+
+  tick() {
+    if (this.over) return;
+    this.timeLeft--;
+    this.timerText.setText(this.fmtTime(Math.max(0, this.timeLeft)));
+    if (this.timeLeft <= 10) this.timerText.setColor("#ff6b6b");
+    if (this.timeLeft <= 0) this.gameOver("Time's up! ⏰");
   }
 
   spawnWave() {
@@ -177,6 +196,7 @@ class FruitSlicer extends Phaser.Scene {
   gameOver(msg) {
     if (this.over) return;
     this.over = true;
+    this.timerEvent.remove();
     this.objects.forEach((o) => o.sprite.destroy());
     this.objects = [];
     this.trail = [];
