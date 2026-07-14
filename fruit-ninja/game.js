@@ -160,6 +160,9 @@ class FruitNinja extends Phaser.Scene {
       o.vy += GRAVITY * dt;
       o.x += o.vx * dt;
       o.y += o.vy * dt;
+      // bounce off the side walls so fruit never fly off-screen sideways
+      if (o.x < o.r) { o.x = o.r; o.vx = Math.abs(o.vx); }
+      else if (o.x > GAME_W - o.r) { o.x = GAME_W - o.r; o.vx = -Math.abs(o.vx); }
       o.sprite.setPosition(o.x, o.y);
       o.sprite.rotation += o.spin * dt;
       if (o.y > GAME_H + o.r * 2 && o.vy > 0) { // fell back off the bottom
