@@ -1,4 +1,4 @@
-// Fruit Ninja — swipe to slice launched fruit, avoid bombs. Single Phaser scene.
+// Fruit Slicer — swipe to slice launched fruit, avoid bombs. Single Phaser scene.
 // Fruit are manual projectiles (gravity). Slicing tests the pointer's frame-to-frame
 // SEGMENT against each fruit circle, so fast swipes don't tunnel past a fruit.
 
@@ -34,7 +34,7 @@ function segHitsCircle(ax, ay, bx, by, cx, cy, r) {
   return ex * ex + ey * ey <= r * r;
 }
 
-class FruitNinja extends Phaser.Scene {
+class FruitSlicer extends Phaser.Scene {
   create() {
     this.score = 0;
     this.lives = LIVES;
@@ -203,5 +203,5 @@ new Phaser.Game({
     width: GAME_W,
     height: GAME_H,
   },
-  scene: FruitNinja,
+  scene: FruitSlicer,
 });
