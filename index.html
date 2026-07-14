@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Games</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #1a1a2e;
+      color: #e6e6f0;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin: 0 0 6px;
+    }
+
+    p.sub {
+      color: #888;
+      margin: 0 0 36px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 20px;
+      width: 100%;
+      max-width: 860px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    a.card {
+      background: #16213e;
+      border: 1px solid #2a3a63;
+      border-radius: 14px;
+      padding: 28px 22px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+    }
+
+    a.card:hover {
+      transform: translateY(-4px);
+      border-color: #4e54c8;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
+    }
+
+    .icon {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .name {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .desc {
+      color: #9aa;
+      font-size: .9rem;
+    }
+
+    footer {
+      margin-top: 40px;
+      color: #556;
+      font-size: .8rem;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🎮 Mini Games</h1>
+  <p class="sub">Pick a game to play</p>
+
+  <div class="grid">
+    <a class="card" href="./memory-game/">
+      <span class="icon">🧠</span>
+      <span class="name">Memory Match</span>
+      <span class="desc">Flip cards and find all the matching pairs.</span>
+    </a>
+    <a class="card" href="./mystery-boxes/">
+      <span class="icon">🎁</span>
+      <span class="name">Mystery Boxes</span>
+      <span class="desc">Pick a gift box and reveal your prize.</span>
+    </a>
+    <a class="card" href="./loot-catcher/">
+      <span class="icon">🧺</span>
+      <span class="name">Loot Catcher</span>
+      <span class="desc">Catch falling rewards, dodge the bombs.</span>
+    </a>
+  </div>
+
+  </footer>
+</body>
+
+</html>
