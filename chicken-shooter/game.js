@@ -40,8 +40,17 @@ class ChickenShooterGame extends Phaser.Scene {
       this.drawBush(bx, GAME_H * BUSH_Y, Phaser.Math.Between(96, 132) * S);
     }
 
-    this.drawBarn(GAME_W * 0.2, GAME_H * BUSH_Y);
-    this.drawWindmill(GAME_W * 0.82, GAME_H * BUSH_Y);
+    this.barnX = GAME_W * 0.2;
+    this.windmillX = GAME_W * 0.82;
+    this.drawBarn(this.barnX, GAME_H * BUSH_Y);
+    this.drawWindmill(this.windmillX, GAME_H * BUSH_Y);
+
+    // where pop-ups can peek from: each bush, plus the barn (door + roof) and windmill (base + blades)
+    this.popSpots = this.bushX.map((x) => ({ x, y: GAME_H * BUSH_Y - 34 * S }));
+    this.popSpots.push({ x: this.barnX, y: GAME_H * BUSH_Y - 30 * S });       // barn doorway
+    this.popSpots.push({ x: this.barnX, y: GAME_H * BUSH_Y - 116 * S });      // barn roof
+    this.popSpots.push({ x: this.windmillX, y: GAME_H * BUSH_Y - 30 * S });   // windmill base
+    this.popSpots.push({ x: this.windmillX, y: GAME_H * BUSH_Y - 150 * S });  // windmill blades/hub
 
     // HUD
     this.scoreText = this.add.text(16 * S, 12 * S, "Score: 0", {
@@ -180,7 +189,7 @@ class ChickenShooterGame extends Phaser.Scene {
     const speed = (close ? Phaser.Math.Between(210, 300) : Phaser.Math.Between(120, 210)) * S;
     const x = fromLeft ? -60 * S : GAME_W + 60 * S;
     const sprite = this.add.text(x, baseY, "🐔", { fontSize: px(40), padding: { y: 6 } })
-      .setOrigin(0.5).setDepth(close ? 8 : 2).setScale(fromLeft ? scale : -scale, scale);
+      .setOrigin(0.5).setDepth(close ? 8 : 2).setScale(fromLeft ? -scale : scale, scale);
     this.chickens.push({
       mode: "fly", sprite, points, baseY,
       vx: fromLeft ? speed : -speed,
@@ -195,8 +204,9 @@ class ChickenShooterGame extends Phaser.Scene {
     const close = Math.random() < CLOSE_CHANCE;
     const scale = close ? Phaser.Math.FloatBetween(1.7, 2.3) : Phaser.Math.FloatBetween(0.8, 1.2);
     const points = this.pts(POP_BASE, scale, 1);
-    const x = close ? Phaser.Math.Between(90 * S, GAME_W - 90 * S) : Phaser.Utils.Array.GetRandom(this.bushX);
-    const y = close ? GAME_H * 0.92 : GAME_H * BUSH_Y - 34 * S; // close ones sit low, near the viewer
+    const spot = Phaser.Utils.Array.GetRandom(this.popSpots);
+    const x = close ? Phaser.Math.Between(90 * S, GAME_W - 90 * S) : spot.x;
+    const y = close ? GAME_H * 0.92 : spot.y; // close ones sit low; others peek from a bush/barn/windmill
     const sx = (Math.random() < 0.5 ? 1 : -1) * scale;
     const sprite = this.add.text(x, y, "🐔", { fontSize: px(40), padding: { y: 6 } })
       .setOrigin(0.5).setDepth(close ? 8 : 5).setScale(0);
