@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Remove a mini-game: delete its folder and its portal card.
+# Prompts for confirmation — you must type the exact game name (slug) to proceed.
 # Usage: ./remove-game.sh <slug>
 # Example: ./remove-game.sh snake
 set -euo pipefail
@@ -22,6 +23,14 @@ HAS_CARD=0; grep -qF "href=\"./$SLUG/\"" "$ROOT/index.html" && HAS_CARD=1
 
 if [ "$HAS_FOLDER" -eq 0 ] && [ "$HAS_CARD" -eq 0 ]; then
   echo "Error: no game '$SLUG' found (no $SLUG/ folder and no portal card)"; exit 1
+fi
+
+# confirmation guard — type the exact game name to proceed
+printf "This will permanently delete '%s' (folder + portal card).\n" "$SLUG"
+read -r -p "Type the game name to confirm: " CONFIRM
+if [ "$CONFIRM" != "$SLUG" ]; then
+  echo "Aborted — '$CONFIRM' does not match '$SLUG'. Nothing was removed."
+  exit 1
 fi
 
 # remove the portal card block (<a class="card" href="./SLUG/"> ... </a>)

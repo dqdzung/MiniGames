@@ -91,6 +91,9 @@ Delete a game's folder and its portal card:
 ./remove-game.sh snake
 ```
 
+It asks for confirmation before deleting anything — you must type the exact game
+name (the slug) to proceed; any other input aborts and nothing is removed.
+
 ## Deploying
 
 Hosted on Netlify (static). From the repo root:
