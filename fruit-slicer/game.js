@@ -18,6 +18,7 @@ const FRUITS = [
 ];
 const BOMB = "💣";
 const BOMB_CHANCE = 0.14;
+const KABOOM = "💥";
 
 const GRAVITY = 520 * S; // px/s^2 in scaled space
 const FRUIT_R = 36 * S; // slice hit radius (forgiving)
@@ -154,7 +155,7 @@ class FruitSlicerGame extends Phaser.Scene {
 
 	sliceObject(o, i) {
 		if (o.bomb) {
-			this.gameOver("Boom! 💣");
+			this.gameOver("Boom! 💥");
 			return;
 		}
 		this.score++;
