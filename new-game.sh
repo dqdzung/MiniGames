@@ -1,16 +1,23 @@
 #!/usr/bin/env bash
 # Scaffold a new mini-game: folder + index.html + starter game.js + portal card.
-# Usage: ./new-game.sh <slug> "<Title>" <emoji> "<description>"
-# Example: ./new-game.sh snake "Snake" 🐍 "Eat, grow, don't crash into yourself."
+# Usage: ./new-game.sh <slug> ["<Title>"] [<emoji>] ["<description>"]
+#   slug         required, kebab-case (e.g. my-game)
+#   Title        optional — defaults to the slug title-cased (my-game -> My Game)
+#   emoji        optional — defaults to 🎮
+#   description  optional — defaults to a placeholder
+# Examples:
+#   ./new-game.sh snake "Snake" 🐍 "Eat, grow, don't crash."
+#   ./new-game.sh snake            # everything but the slug defaulted
 set -euo pipefail
 
-if [ "$#" -ne 4 ]; then
-  echo "Usage: $0 <slug> \"<Title>\" <emoji> \"<description>\""
+if [ "$#" -lt 1 ] || [ "$#" -gt 4 ]; then
+  echo "Usage: $0 <slug> [\"<Title>\"] [<emoji>] [\"<description>\"]"
+  echo "  only <slug> is required (kebab-case). Title/emoji/description are optional."
   echo "Example: $0 snake \"Snake\" 🐍 \"Eat, grow, don't crash.\""
   exit 1
 fi
 
-SLUG="$1"; TITLE="$2"; EMOJI="$3"; DESC="$4"
+SLUG="$1"
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 
 # slug must be kebab-case (folder + URL friendly)
@@ -23,6 +30,12 @@ fi
 if ! grep -q "NEW-GAME-CARD" "$ROOT/index.html"; then
   echo "Error: portal index.html is missing the <!-- NEW-GAME-CARD --> marker"; exit 1
 fi
+
+# optional args with defaults derived from the slug
+TITLE_FROM_SLUG="$(echo "$SLUG" | awk -F- '{for(i=1;i<=NF;i++)$i=toupper(substr($i,1,1)) substr($i,2);print}' OFS=' ')"
+TITLE="${2:-$TITLE_FROM_SLUG}"
+EMOJI="${3:-🎮}"
+DESC="${4:-Coming soon.}"
 
 # PascalCase class name from slug (my-game -> MyGame)
 CLASS="$(echo "$SLUG" | awk -F- '{s="";for(i=1;i<=NF;i++)s=s toupper(substr($i,1,1)) substr($i,2);print s}')"
@@ -104,5 +117,5 @@ awk -v cf="$CARDFILE" '
 mv "$ROOT/index.html.tmp" "$ROOT/index.html"
 rm -f "$CARDFILE"
 
-echo "Created $SLUG/ (class ${CLASS}) and added it to the portal."
+echo "Created $SLUG/ (class ${CLASS}, title \"${TITLE}\", ${EMOJI}) and added it to the portal."
 echo "Next: open $SLUG/index.html and build the game in $SLUG/game.js"

@@ -67,12 +67,14 @@ Any static file server works (`python3 -m http.server`, etc.).
 
 ## Adding a new game
 
-Run the scaffolding script from the repo root:
+Run the scaffolding script from the repo root. Only the slug is required:
 
 ```
-./new-game.sh <slug> "<Title>" <emoji> "<description>"
-# e.g.
+./new-game.sh <slug> ["<Title>"] [<emoji>] ["<description>"]
+# Title defaults to the slug title-cased (my-game -> My Game),
+# emoji defaults to 🎮, description to a placeholder.
 ./new-game.sh snake "Snake" 🐍 "Eat, grow, don't crash."
+./new-game.sh snake                # everything but the slug defaulted
 ```
 
 It creates `<slug>/index.html` and a starter `<slug>/game.js` (following the
