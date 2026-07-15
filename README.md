@@ -78,7 +78,7 @@ Run the scaffolding script from the repo root. Only the slug is required:
 ```
 
 It creates `<slug>/index.html` and a starter `<slug>/game.js` (following the
-conventions above) and inserts a portal card at the `<!-- NEW-GAME-CARD -->`
+conventions above; the scene class is named `<Slug>Game`, e.g. `snake` -> `SnakeGame`) and inserts a portal card at the `<!-- NEW-GAME-CARD -->`
 marker in `index.html`. Then open `<slug>/index.html` and build the game.
 
 ## Removing a game

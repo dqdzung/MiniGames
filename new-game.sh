@@ -38,7 +38,7 @@ EMOJI="${3:-🎮}"
 DESC="${4:-Coming soon.}"
 
 # PascalCase class name from slug (my-game -> MyGame)
-CLASS="$(echo "$SLUG" | awk -F- '{s="";for(i=1;i<=NF;i++)s=s toupper(substr($i,1,1)) substr($i,2);print s}')"
+CLASS="$(echo "$SLUG" | awk -F- '{s="";for(i=1;i<=NF;i++)s=s toupper(substr($i,1,1)) substr($i,2);print s}')"Game
 
 mkdir "$ROOT/$SLUG"
 

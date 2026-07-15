@@ -32,7 +32,7 @@ const boardH = ROWS * BOX + (ROWS - 1) * GAP;
 const GAME_W = boardW + MARGIN * 2;
 const GAME_H = boardH + MARGIN * 2 + TOP_BAR + BOTTOM_BAR;
 
-class MysteryScene extends Phaser.Scene {
+class MysteryBoxGame extends Phaser.Scene {
   create() {
     this.picked = false;
 
@@ -128,5 +128,5 @@ new Phaser.Game({
     width: GAME_W,
     height: GAME_H,
   },
-  scene: MysteryScene,
+  scene: MysteryBoxGame,
 });

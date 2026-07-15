@@ -20,7 +20,7 @@ const boardH = ROWS * CARD_H + (ROWS - 1) * GAP;
 const GAME_W = boardW + MARGIN * 2;
 const GAME_H = boardH + MARGIN * 2 + TOP_BAR;
 
-class MemoryScene extends Phaser.Scene {
+class MemoryGame extends Phaser.Scene {
   create() {
     this.moves = 0;
     this.matched = 0;
@@ -138,5 +138,5 @@ new Phaser.Game({
     width: GAME_W,
     height: GAME_H,
   },
-  scene: MemoryScene,
+  scene: MemoryGame,
 });

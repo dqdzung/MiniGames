@@ -25,7 +25,7 @@ const BASKET_HALF = 42 * S; // horizontal catch radius
 const ITEM_HALF = 20 * S;
 const MOVE_SPEED = 680 * S; // px/s for keyboard control
 
-class CatchScene extends Phaser.Scene {
+class CatchGame extends Phaser.Scene {
 	create() {
 		this.score = 0;
 		this.lives = 3;
@@ -210,5 +210,5 @@ new Phaser.Game({
 		width: GAME_W,
 		height: GAME_H,
 	},
-	scene: CatchScene,
+	scene: CatchGame,
 });

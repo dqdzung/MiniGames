@@ -27,7 +27,7 @@ const randType = () => Math.floor(Math.random() * GEM_COLORS.length);
 const cellX = (c) => MARGIN + c * CELL + CELL / 2;
 const cellY = (r) => TOP + MARGIN + r * CELL + CELL / 2;
 
-class Match3 extends Phaser.Scene {
+class Match3Game extends Phaser.Scene {
   create() {
     this.score = 0;
     this.busy = false;   // input lock during animated resolution
@@ -348,7 +348,7 @@ new Phaser.Game({
     width: GAME_W,
     height: GAME_H,
   },
-  scene: Match3,
+  scene: Match3Game,
 });
 
 // Lose conditions: 2-minute timer runs out, or the board has no valid move.
