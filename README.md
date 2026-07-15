@@ -67,10 +67,17 @@ Any static file server works (`python3 -m http.server`, etc.).
 
 ## Adding a new game
 
-1. Create a folder, e.g. `snake/`.
-2. Add `snake/index.html` (copy any existing game's — change the `<title>` and favicon emoji; keep `<link rel="stylesheet" href="../game.css">` and the Phaser CDN tag).
-3. Write `snake/game.js` as a single Phaser scene (follow the `S`-factor + `Scale.FIT` conventions above).
-4. Add a card to the portal `index.html` linking to `./snake/`.
+Run the scaffolding script from the repo root:
+
+```
+./new-game.sh <slug> "<Title>" <emoji> "<description>"
+# e.g.
+./new-game.sh snake "Snake" 🐍 "Eat, grow, don't crash."
+```
+
+It creates `<slug>/index.html` and a starter `<slug>/game.js` (following the
+conventions above) and inserts a portal card at the `<!-- NEW-GAME-CARD -->`
+marker in `index.html`. Then open `<slug>/index.html` and build the game.
 
 ## Deploying
 
