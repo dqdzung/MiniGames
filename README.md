@@ -81,6 +81,16 @@ It creates `<slug>/index.html` and a starter `<slug>/game.js` (following the
 conventions above) and inserts a portal card at the `<!-- NEW-GAME-CARD -->`
 marker in `index.html`. Then open `<slug>/index.html` and build the game.
 
+## Removing a game
+
+Delete a game's folder and its portal card:
+
+```
+./remove-game.sh <slug>
+# e.g.
+./remove-game.sh snake
+```
+
 ## Deploying
 
 Hosted on Netlify (static). From the repo root:
