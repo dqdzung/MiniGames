@@ -38,7 +38,7 @@ class Match3Game extends Phaser.Scene {
       fontSize: px(26), color: "#fff", fontStyle: "bold", padding: { y: 6 },
     });
     this.scoreText = this.add.text(GAME_W - MARGIN, 26 * S, "Score: 0", {
-      fontSize: px(18), color: "#ffd166", fontStyle: "bold", padding: { y: 6 },
+      fontSize: px(20), color: "#ffd166", fontStyle: "bold", padding: { y: 6 },
     }).setOrigin(1, 0);
 
     // 2-minute countdown

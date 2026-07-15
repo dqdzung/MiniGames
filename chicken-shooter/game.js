@@ -54,7 +54,7 @@ class ChickenShooterGame extends Phaser.Scene {
 
     // HUD
     this.scoreText = this.add.text(16 * S, 12 * S, "Score: 0", {
-      fontSize: px(20), color: "#fff", fontStyle: "bold", padding: { y: 6 },
+      fontSize: px(20), color: "#ffd166", fontStyle: "bold", padding: { y: 6 },
     }).setDepth(10);
     this.timerText = this.add.text(GAME_W / 2, 12 * S, this.fmtTime(this.timeLeft), {
       fontSize: px(20), color: "#fff", fontStyle: "bold", padding: { y: 6 },
