@@ -10,7 +10,9 @@ const GAME_H = 640 * S;
 const GAME_SECONDS = 60;
 
 const PIVOT = { x: GAME_W / 2, y: 66 * S }; // where the rope hangs from
-const DIRT_Y = 168 * S;                     // top of the dirt (items live below this)
+const DIRT_Y = 168 * S;                     // top of the dirt
+const NO_SPAWN_H = 65 * S;                   // dead band at the top of the mine (no loot spawns here)
+const SPAWN_TOP = DIRT_Y + NO_SPAWN_H;      // loot only spawns below this
 
 const MAX_ANG = 1.15;        // rad, swing half-range
 const SWING_SPEED = 1.8;     // rad/s of the sine swing
@@ -102,7 +104,7 @@ class GoldMinerGame extends Phaser.Scene {
     let x, y, tries = 0;
     do {
       x = Phaser.Math.Between(40 * S + r, GAME_W - 40 * S - r);
-      y = Phaser.Math.Between(DIRT_Y + r + 10 * S, GAME_H - r - 26 * S);
+      y = Phaser.Math.Between(SPAWN_TOP + r, GAME_H - r - 26 * S);
       tries++;
     } while (tries < 40 && this.items.some((it) =>
       Phaser.Math.Distance.Between(x, y, it.x, it.y) < r + it.r + 8 * S));
