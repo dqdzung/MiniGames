@@ -15,6 +15,8 @@ HTML, CSS, and vanilla JS, with Phaser loaded from a CDN.
 | 🧺 Loot Catcher | `loot-catcher/` | Move the basket (mouse/touch or ←/→) to catch rewards and dodge bombs. 5 lives; rarer rewards score more. |
 | 💎 Match 3 | `match-3/` | Swap adjacent gems to line up 3+. Cascades chain. 2-minute timer; lose if time runs out or no moves remain. |
 | 🍉 Fruit Slicer | `fruit-slicer/` | Swipe to slice launched fruit, avoid bombs. 3 lives, 2-minute timer. |
+| 🐔 Chicken Shooter | `chicken-shooter/` | Aim the crosshair and click to shoot flying and bush-peeking chickens; reload with right-click / R. 90-second timer. |
+| ⛏️ Gold Miner | `gold-miner/` | Fire the swinging claw to grab gold, diamonds, and rocks (heavier = slower reel-in); avoid the bomb. 60-second timer. |
 
 ## Tech stack
 
@@ -29,13 +31,17 @@ MiniGames/
 ├── index.html          # portal — links to each game
 ├── styles.css          # portal styles
 ├── game.css            # shared by every game's page (canvas fills viewport)
+├── new-game.sh         # scaffold a new game (folder + files + portal card)
+├── remove-game.sh      # delete a game (folder + portal card)
 ├── memory-game/
 │   ├── index.html      # loads ../game.css + Phaser CDN + game.js
 │   └── game.js         # the whole game (one Phaser scene)
 ├── mystery-boxes/
 ├── loot-catcher/
 ├── match-3/
-└── fruit-slicer/
+├── fruit-slicer/
+├── chicken-shooter/
+└── gold-miner/
 ```
 
 Each game folder has the same two files: a minimal `index.html` (title, favicon,
@@ -43,16 +49,17 @@ shared `../game.css`, Phaser CDN, and `game.js`) and a self-contained `game.js`.
 
 ## Running locally
 
-No server required for the games themselves — just open a game's `index.html` in a
-browser (Phaser loads from the CDN, so you need an internet connection).
-
-For the portal's relative links to resolve, serve the root folder:
+Serve the repo root with any static server — one server covers the portal and every
+game (Phaser loads from the CDN, so you need an internet connection):
 
 ```
-npx live-server        # then open the printed localhost URL
+npx live-server --port=8080
+# portal:  http://127.0.0.1:8080/
+# a game:  http://127.0.0.1:8080/<slug>/
 ```
 
-Any static file server works (`python3 -m http.server`, etc.).
+`python3 -m http.server` works too. Opening a game's `index.html` file directly also
+works, but the portal's relative links need it served from the root.
 
 ## Conventions (shared across games)
 
