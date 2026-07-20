@@ -30,7 +30,7 @@ const CHICK_COLOR = 0xfff3d0;
 const VEHICLE_TYPES = [
 	{ len: 1.0, h: 1.0 }, // car
 	{ len: 1.5, h: 1.15 }, // van
-	{ len: 2.2, h: 1.0 }, // truck
+	{ len: 2.2, h: 1.2 }, // truck
 	{ len: 2.0, h: 1.4 }, // bus
 ];
 const VEHICLE_COLORS = [
@@ -323,16 +323,6 @@ class CrossyChickenGame extends Phaser.Scene {
 			const side1 = c.clone().darken(22).color,
 				side2 = c.clone().darken(38).color,
 				edge = c.clone().darken(55).color;
-			const g = this.add.graphics();
-			g.fillStyle(side1, 1);
-			g.fillPoints([P(At), P(Bt), P(Bb), P(Ab)], true); // long side
-			g.fillStyle(side2, 1);
-			g.fillPoints([P(At), P(Dt), P(Db), P(Ab)], true); // short side
-			g.fillStyle(v.color, 1);
-			g.fillPoints([P(At), P(Bt), P(Ct), P(Dt)], true); // top
-			g.lineStyle(2 * S, edge, 1);
-			g.strokePoints([P(At), P(Bt), P(Ct), P(Dt)], true);
-			// window band + wheels on the long (front) side
 			const L = (a, b, t) => ({
 				x: a.x + (b.x - a.x) * t,
 				y: a.y + (b.y - a.y) * t,
@@ -341,25 +331,70 @@ class CrossyChickenGame extends Phaser.Scene {
 				TR = P(Bt),
 				BR = P(Bb),
 				BL = P(Ab);
-			const winL = L(L(TL, BL, 0.22), L(TR, BR, 0.22), 0.08),
-				winR = L(L(TR, BR, 0.22), L(TL, BL, 0.22), 0.08);
-			const winBL = L(L(TL, BL, 0.52), L(TR, BR, 0.52), 0.08),
-				winBR = L(L(TR, BR, 0.52), L(TL, BL, 0.52), 0.08);
-			g.fillStyle(0xcdeafe, 1);
-			g.fillPoints([winL, winR, winBR, winBL], true);
-			const wy = 0.92,
-				wr2 = 4.5 * S;
-			const wa = L(L(TL, BL, wy), L(TR, BR, wy), 0.24),
-				wb = L(L(TL, BL, wy), L(TR, BR, wy), 0.76);
-			g.fillStyle(0x222226, 1);
-			g.fillCircle(wa.x, wa.y, wr2);
-			g.fillCircle(wb.x, wb.y, wr2);
+			const SF = (u, vv) => L(L(P(Ab), P(Db), u), L(P(At), P(Dt), u), vv); // point on the visible end face
 			const w = Math.ceil(maxX - minX),
 				ht = Math.ceil(maxY - minY);
-			g.generateTexture(key, w, ht);
-			g.destroy();
+			// bake one texture; lightColor is drawn on the visible end face
+			// (headlight yellow or taillight red, chosen per lane by travel direction)
+			const bake = (texKey, lightColor) => {
+				const g = this.add.graphics();
+				g.fillStyle(side1, 1);
+				g.fillPoints([P(At), P(Bt), P(Bb), P(Ab)], true); // long side
+				g.fillStyle(side2, 1);
+				g.fillPoints([P(At), P(Dt), P(Db), P(Ab)], true); // short side (visible end)
+				g.fillStyle(v.color, 1);
+				g.fillPoints([P(At), P(Bt), P(Ct), P(Dt)], true); // top
+				g.lineStyle(2 * S, edge, 1);
+				g.strokePoints([P(At), P(Bt), P(Ct), P(Dt)], true);
+				// separate window panes along the long side (pillars between them)
+				const F = (t, u) => L(L(TL, BL, u), L(TR, BR, u), t); // t=length 0..1, u=height 0(top)..1
+				const uTop = 0.24,
+					uBot = 0.54,
+					lo = 0.08,
+					span = 0.84;
+				const nWin = Math.max(2, Math.round(v.len * 2));
+				const slot = span / nWin;
+				g.fillStyle(0xcdeafe, 1);
+				for (let k = 0; k < nWin; k++) {
+					const t0 = lo + k * slot + slot * 0.16,
+						t1 = lo + k * slot + slot * 0.84;
+					g.fillPoints(
+						[F(t0, uTop), F(t1, uTop), F(t1, uBot), F(t0, uBot)],
+						true,
+					);
+				}
+				// two lights on the visible end face (dc=-hl)
+				g.fillStyle(lightColor, 1);
+				g.fillPoints(
+					[SF(0.16, 0.4), SF(0.32, 0.4), SF(0.32, 0.22), SF(0.16, 0.22)],
+					true,
+				);
+				g.fillPoints(
+					[SF(0.68, 0.4), SF(0.84, 0.4), SF(0.84, 0.22), SF(0.68, 0.22)],
+					true,
+				);
+				// windshield glass on the upper part of the visible end face, above the lights
+				g.fillStyle(0xcdeafe, 1);
+				g.fillPoints(
+					[SF(0.2, 0.82), SF(0.8, 0.82), SF(0.8, 0.54), SF(0.2, 0.54)],
+					true,
+				);
+				// wheels on the long side
+				const wy = 0.92,
+					wr2 = 5 * S;
+				const wa = L(L(TL, BL, wy), L(TR, BR, wy), 0.24),
+					wb = L(L(TL, BL, wy), L(TR, BR, wy), 0.76);
+				g.fillStyle(0x222226, 1);
+				g.fillCircle(wa.x, wa.y, wr2);
+				g.fillCircle(wb.x, wb.y, wr2);
+				g.generateTexture(texKey, w, ht);
+				g.destroy();
+			};
+			bake(key + "h", 0xfff6c0); // headlights on the visible end
+			bake(key + "t", 0xe23b3b); // taillights on the visible end
 			return {
-				key,
+				keyHead: key + "h",
+				keyTail: key + "t",
 				len: v.len,
 				originX: -minX / (maxX - minX),
 				originY: -minY / (maxY - minY),
@@ -423,6 +458,9 @@ class CrossyChickenGame extends Phaser.Scene {
 			row.speed = Phaser.Math.FloatBetween(1.4, 2.8); // columns / second
 			const veh = Phaser.Utils.Array.GetRandom(this.veh); // one vehicle type per lane
 			row.veh = veh;
+			// visible end face shows headlights when the car leads with it (moving right, dir<0),
+			// taillights when it trails (moving left, dir>0)
+			const vehKey = row.dir < 0 ? veh.keyHead : veh.keyTail;
 			const hl = veh.len / 2;
 			row.carMin = CAR_MIN - hl; // cars fully leave (and fade) before wrapping
 			row.carMax = CAR_MAX + hl;
@@ -433,7 +471,7 @@ class CrossyChickenGame extends Phaser.Scene {
 			const off = Math.random() * gap;
 			for (let i = 0; i < count; i++) {
 				const sprite = this.add
-					.image(0, 0, veh.key)
+					.image(0, 0, vehKey)
 					.setOrigin(veh.originX, veh.originY);
 				row.cars.push({ c: row.carMin + off + i * gap, sprite });
 			}
@@ -627,4 +665,3 @@ new Phaser.Game({
 	},
 	scene: CrossyChickenGame,
 });
-
