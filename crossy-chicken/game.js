@@ -21,6 +21,7 @@ const HOP_MS = 95;
 const LOOKAHEAD = 14;
 const BEHIND = 22;      // keep passed rows until they are well off the bottom of the screen
 const CHICK_HALF = 0.3;     // chicken half-width; a car adds its own len/2 for collision
+const CHICK_SCALE = 0.8;    // render the chicken a bit smaller than the cars
 const ROW_HALF = 0.4;       // vehicle width within a lane (rows)
 const CHICK_COLOR = 0xfff3d0;
 
@@ -49,14 +50,14 @@ class CrossyChickenGame extends Phaser.Scene {
     this.pending = null;
     this.buttonTapped = false;
 
-    this.buildCubeTextures();
+    this.buildChickenTextures();
     this.buildVehicleTextures();
     for (let r = 0; r <= LOOKAHEAD; r++) this.generateRow(r);
 
     this.chicken = { col: Math.floor(COLS / 2), row: 0, hopping: false };
     const p0 = project(this.chicken.col, this.chicken.row);
     this.chicken.sprite = this.add.image(p0.x, p0.y, this.chick.key)
-      .setOrigin(this.chick.originX, this.chick.originY).setDepth(depthOf(this.chicken.col, this.chicken.row) + 1);
+      .setOrigin(this.chick.originX, this.chick.originY).setScale(CHICK_SCALE).setDepth(depthOf(this.chicken.col, this.chicken.row) + 1);
 
     this.cameras.main.setScroll(p0.x - GAME_W / 2, p0.y - GAME_H * 0.6);
 
@@ -101,41 +102,57 @@ class CrossyChickenGame extends Phaser.Scene {
     return { Tt, Tr, Tb, Tl };
   }
 
-  // Crossy-Road-style chicken: plump white body + head, pink comb, wedge beak, eye, feet.
-  // No hard outlines + soft shading keep it from looking boxy.
-  buildCubeTextures() {
-    const W = Math.ceil(TW * 1.5), H = Math.ceil(TH + BLOCK_H * 2.4);
-    const BX = W / 2, BY = H - HH - 24 * S;
+  // iso box aligned to the grid: half-extents cw (cols) x rw (rows), height h. Base centre at (bx,by).
+  drawBox(g, bx, by, cw, rw, h, top, left, right) {
+    const P = (dc, dr, dz) => ({ x: bx + (dr - dc) * HW, y: by - (dc + dr) * HH - dz });
+    const At = P(-cw, -rw, h), Bt = P(cw, -rw, h), Ct = P(cw, rw, h), Dt = P(-cw, rw, h);
+    const Ab = P(-cw, -rw, 0), Bb = P(cw, -rw, 0), Db = P(-cw, rw, 0);
+    g.fillStyle(left, 1);  g.fillPoints([At, Bt, Bb, Ab], true);
+    g.fillStyle(right, 1); g.fillPoints([At, Dt, Db, Ab], true);
+    g.fillStyle(top, 1);   g.fillPoints([At, Bt, Ct, Dt], true);
+    return { topCenter: P(0, 0, h) };
+  }
+
+  // Crossy-Road-style chicken: raised body on two legs, pink comb, wedge beak, eye, feet
+  buildChickenTextures() {
+    const W = Math.ceil(TW * 1.6), H = Math.ceil(TH + BLOCK_H * 3.6);
+    const BX = W / 2, GROUND = H - HH - 14 * S, legLen = BLOCK_H * 0.55, BY = GROUND - legLen;
     const shade = (col) => {
       const c = Phaser.Display.Color.IntegerToColor(col);
       return [col, c.clone().darken(7).color, c.clone().darken(16).color, null];
     };
-    const WHITE = shade(0xffffff), PINK = shade(0xff4d94), ORANGE = shade(0xff8c1a);
+    const WHITE = shade(0xffffff), PINK = shade(0xff4d94), ORANGE = shade(0xff8c1a), LEG = shade(0xf08a1a);
     const g = this.add.graphics();
-
-    g.fillStyle(0x101018, 0.16); g.fillEllipse(BX, BY + HH * 0.5, HW * 1.5, HH * 1.2); // shadow
-
-    const bhw = HW * 0.58, bhh = HH * 0.58, bch = BLOCK_H * 0.68;
-    this.drawCube(g, BX, BY, bhw, bhh, bch, ...WHITE);                                   // plump body
-    const hy = BY - bch + HH * 0.05, hhw = HW * 0.46, hhh = HH * 0.46, hch = BLOCK_H * 0.5;
-    const head = this.drawCube(g, BX, hy, hhw, hhh, hch, ...WHITE);                      // wide head, small step
-    const headTopCY = hy - hch;
-    this.drawCube(g, BX - 5 * S, headTopCY - 1 * S, HW * 0.12, HH * 0.12, BLOCK_H * 0.2, ...PINK); // comb
-    this.drawCube(g, BX + 7 * S, headTopCY - 5 * S, HW * 0.09, HH * 0.09, BLOCK_H * 0.14, ...PINK);
-    const bk = { x: head.Tr.x, y: head.Tr.y };                                           // beak — points up-right (toward the road)
+    g.fillStyle(0x101018, 0.16); g.fillEllipse(BX, GROUND + HH * 0.5, HW * 1.5, HH * 1.2); // shadow
+    // legs + feet drawn BEFORE the body so it hides their tops (they appear from underneath)
+    this.drawCube(g, BX - HW * 0.14, GROUND, HW * 0.05, HH * 0.05, legLen, ...LEG);
+    this.drawCube(g, BX + HW * 0.14, GROUND, HW * 0.05, HH * 0.05, legLen, ...LEG);
+    this.drawCube(g, BX - HW * 0.1, GROUND, HW * 0.09, HH * 0.05, BLOCK_H * 0.07, ...ORANGE); // feet (point forward)
+    this.drawCube(g, BX + HW * 0.18, GROUND, HW * 0.09, HH * 0.05, BLOCK_H * 0.07, ...ORANGE);
+    const bch = BLOCK_H * 0.72;
+    this.drawBox(g, BX, BY, 0.23, 0.32, bch, WHITE[0], WHITE[1], WHITE[2]); // body longer front-to-back                                    // body (raised)
+    const hfwd = 0.09, hhw = HW * 0.46, hhh = HH * 0.46, hch = BLOCK_H * 0.5;
+    const headX = BX + hfwd * HW, headY = BY - bch - hfwd * HH; // head at the front (up-right) edge of the body
+    const head = this.drawCube(g, headX, headY, hhw, hhh, hch, ...WHITE);
+    const topCY = headY - hch;
+    const RED = shade(0xe0322f);
+    this.drawBox(g, headX, topCY, 0.08, 0.14, BLOCK_H * 0.18, RED[0], RED[1], RED[2]); // comb: one red ridge along the top
+    const bk = { x: head.Tr.x, y: head.Tr.y };                                            // beak (toward road)
     g.fillStyle(0xff8c1a, 1);
     g.fillTriangle(bk.x - hhw * 0.12, bk.y - hhh * 0.08, bk.x + hhw * 0.58, bk.y - hhh * 0.38, bk.x + hhw * 0.06, bk.y + hhh * 0.52);
     g.fillStyle(0xdb7614, 1);
     g.fillTriangle(bk.x + hhw * 0.58, bk.y - hhh * 0.38, bk.x + hhw * 0.06, bk.y + hhh * 0.52, bk.x + hhw * 0.34, bk.y + hhh * 0.05);
-    g.fillStyle(0x222226, 1);                                                            // eye on the visible right face
-    g.fillCircle(bk.x - hhw * 0.42, bk.y + hhh * 0.25, 2.6 * S);
-    // feet staggered along the up-right facing axis (toward the road)
-    this.drawCube(g, BX - HW * 0.02, BY + bhh * 1.02, HW * 0.1, HH * 0.1, BLOCK_H * 0.12, ...ORANGE);
-    this.drawCube(g, BX + HW * 0.24, BY + bhh * 0.72, HW * 0.1, HH * 0.1, BLOCK_H * 0.12, ...ORANGE);
-
+    g.fillStyle(0x222226, 1); g.fillCircle(headX + hhw * 0.58, headY + hhh * 0.42 - hch * 0.6, 2.6 * S); // eye on the right face
+    // little wing painted flat on the visible right face (left side isn't seen)
+    const cw = 0.23, rw = 0.32;
+    const wP = (dr, dz) => ({ x: BX + (dr + cw) * HW, y: BY - (dr - cw) * HH - dz });
+    const wb = -0.1; // shift toward the back
+    const wing = [wP(wb + 0.02, bch * 0.86), wP(wb + rw * 0.8, bch * 0.86), wP(wb + rw * 0.8, bch * 0.46), wP(wb + rw * 0.5, bch * 0.34), wP(wb + 0.02, bch * 0.36)];
+    g.fillStyle(0xe4e4ec, 1); g.fillPoints(wing, true);
+    g.lineStyle(2 * S, 0xc8c8d4, 1); g.strokePoints(wing, true);
     g.generateTexture("chick", W, H);
     g.destroy();
-    this.chick = { key: "chick", originX: BX / W, originY: BY / H };
+    this.chick = { key: "chick", originX: BX / W, originY: GROUND / H };
   }
 
   // bake an isometric BOX texture per vehicle (elongated along the lane); returns placement info
@@ -175,13 +192,14 @@ class CrossyChickenGame extends Phaser.Scene {
   generateRow(r) {
     let type;
     if (r < 3) type = "grass";
-    else if (this.roadRun >= 3) type = "grass";
+    else if (this.roadRun >= 4) type = "grass";     // cap band length (max 4 lanes)
+    else if (this.roadRun === 1) type = "road";     // min 2 lanes per road
     else type = Math.random() < 0.55 ? "road" : "grass";
     this.roadRun = type === "road" ? this.roadRun + 1 : 0;
 
     const row = { type, tiles: [], cars: [] };
     const base = type === "grass" ? 0x66bb5a : 0x565b64;
-    const alt = type === "grass" ? 0x5cb450 : 0x4e535c;
+    const alt = base; // solid tiles (no checker)
     for (let c = 0; c < COLS; c++) {
       const p = project(c, r);
       const g = this.add.graphics().setDepth(GROUND_DEPTH);
@@ -193,6 +211,21 @@ class CrossyChickenGame extends Phaser.Scene {
     }
 
     if (type === "road") {
+      // dashed lane divider on the boundary with the previous lane (roadRun>=2 => row r-1 is also road),
+      // so it sits BETWEEN lanes instead of under the cars
+      if (this.roadRun >= 2) {
+        const stripe = this.add.graphics().setDepth(GROUND_DEPTH + 1);
+        stripe.fillStyle(0xf2f2f2, 0.9);
+        const dl = 0.4, dw = 0.035, rd = r - 0.5; // long + thin so the road-parallel sides read clearly
+        for (let c = 0; c < COLS; c++) {
+          stripe.fillPoints([
+            project(c - dl, rd - dw), project(c + dl, rd - dw),
+            project(c + dl, rd + dw), project(c - dl, rd + dw),
+          ], true); // flat parallelogram on the ground plane
+        }
+        row.tiles.push(stripe);
+      }
+
       row.dir = Math.random() < 0.5 ? 1 : -1;
       row.speed = Phaser.Math.FloatBetween(1.4, 2.8); // columns / second
       const veh = Phaser.Utils.Array.GetRandom(this.veh); // one vehicle type per lane
@@ -238,7 +271,7 @@ class CrossyChickenGame extends Phaser.Scene {
       onComplete: () => { this.chicken.hopping = false; },
     });
     // little hop pop
-    this.tweens.add({ targets: this.chicken.sprite, scaleX: 0.8, scaleY: 0.62, duration: HOP_MS / 2, yoyo: true });
+    this.tweens.add({ targets: this.chicken.sprite, scaleX: CHICK_SCALE * 0.8, scaleY: CHICK_SCALE * 0.62, duration: HOP_MS / 2, yoyo: true });
   }
 
   update(time, delta) {
