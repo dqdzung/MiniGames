@@ -298,4 +298,3 @@ new Phaser.Game({
 	},
 	scene: FruitSlicerGame,
 });
-

@@ -44,7 +44,10 @@ class CatchGame extends Phaser.Scene {
 			padding: { y: 6 },
 		});
 		this.livesText = this.add
-			.text(GAME_W - 16 * S, 12 * S, "❤️".repeat(this.lives), { fontSize: px(20), padding: { y: 6 } })
+			.text(GAME_W - 16 * S, 12 * S, "❤️".repeat(this.lives), {
+				fontSize: px(20),
+				padding: { y: 6 },
+			})
 			.setOrigin(1, 0);
 
 		// basket
@@ -86,7 +89,10 @@ class CatchGame extends Phaser.Scene {
 		const reward = isBomb ? null : this.pickReward();
 		const symbol = isBomb ? BOMB : reward.emoji;
 		const value = isBomb ? 0 : reward.value;
-		const x = Phaser.Math.Between(ITEM_HALF + 8 * S, GAME_W - ITEM_HALF - 8 * S);
+		const x = Phaser.Math.Between(
+			ITEM_HALF + 8 * S,
+			GAME_W - ITEM_HALF - 8 * S,
+		);
 		const t = this.add
 			.text(x, -ITEM_HALF, symbol, { fontSize: px(34), padding: { y: 6 } })
 			.setOrigin(0.5);

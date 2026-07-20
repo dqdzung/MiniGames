@@ -1,61 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mini Games</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>"
+		/>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mini Games</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
+	<body>
+		<h1>🎮 Mini Games</h1>
+		<p class="sub">Pick a game to play</p>
 
-<body>
-  <h1>🎮 Mini Games</h1>
-  <p class="sub">Pick a game to play</p>
-
-  <div class="grid">
-    <a class="card" href="./memory-game/">
-      <span class="icon">🧠</span>
-      <span class="name">Memory Match</span>
-      <span class="desc">Flip cards and find all the matching pairs.</span>
-    </a>
-    <a class="card" href="./mystery-boxes/">
-      <span class="icon">🎁</span>
-      <span class="name">Mystery Boxes</span>
-      <span class="desc">Pick a gift box and reveal your prize.</span>
-    </a>
-    <a class="card" href="./loot-catcher/">
-      <span class="icon">🧺</span>
-      <span class="name">Loot Catcher</span>
-      <span class="desc">Catch falling rewards, dodge the bombs.</span>
-    </a>
-    <a class="card" href="./match-3/">
-      <span class="icon">💎</span>
-      <span class="name">Match 3</span>
-      <span class="desc">Swap gems to line up three or more.</span>
-    </a>
-    <a class="card" href="./fruit-slicer/">
-      <span class="icon">🍉</span>
-      <span class="name">Fruit Slicer</span>
-      <span class="desc">Swipe to slice fruit, dodge bombs.</span>
-    </a>
-    <a class="card" href="./chicken-shooter/">
-      <span class="icon">🐔</span>
-      <span class="name">Chicken Shooter</span>
-      <span class="desc">Shoot the flying chickens before time runs out.</span>
-    </a>
-    <a class="card" href="./gold-miner/">
-      <span class="icon">⛏️</span>
-      <span class="name">Gold Miner</span>
-      <span class="desc">Drop the swinging claw to grab gold, gems, and rocks before time runs out.</span>
-    </a>
-    <a class="card" href="./crossy-chicken/">
-      <span class="icon">🛣️</span>
-      <span class="name">Crossy Chicken</span>
-      <span class="desc">Hop across endless roads and dodge the traffic.</span>
-    </a>
-    <!-- NEW-GAME-CARD: new-game.sh inserts cards above this line -->
-  </div>
-</body>
-
+		<div class="grid">
+			<a class="card" href="./memory-game/">
+				<span class="icon">🧠</span>
+				<span class="name">Memory Match</span>
+				<span class="desc">Flip cards and find all the matching pairs.</span>
+			</a>
+			<a class="card" href="./mystery-boxes/">
+				<span class="icon">🎁</span>
+				<span class="name">Mystery Boxes</span>
+				<span class="desc">Pick a gift box and reveal your prize.</span>
+			</a>
+			<a class="card" href="./loot-catcher/">
+				<span class="icon">🧺</span>
+				<span class="name">Loot Catcher</span>
+				<span class="desc">Catch falling rewards, dodge the bombs.</span>
+			</a>
+			<a class="card" href="./match-3/">
+				<span class="icon">💎</span>
+				<span class="name">Match 3</span>
+				<span class="desc">Swap gems to line up three or more.</span>
+			</a>
+			<a class="card" href="./fruit-slicer/">
+				<span class="icon">🍉</span>
+				<span class="name">Fruit Slicer</span>
+				<span class="desc">Swipe to slice fruit, dodge bombs.</span>
+			</a>
+			<a class="card" href="./chicken-shooter/">
+				<span class="icon">🐔</span>
+				<span class="name">Chicken Shooter</span>
+				<span class="desc"
+					>Shoot the flying chickens before time runs out.</span
+				>
+			</a>
+			<a class="card" href="./gold-miner/">
+				<span class="icon">⛏️</span>
+				<span class="name">Gold Miner</span>
+				<span class="desc"
+					>Drop the swinging claw to grab gold, gems, and rocks before time runs
+					out.</span
+				>
+			</a>
+			<a class="card" href="./crossy-chicken/">
+				<span class="icon">🛣️</span>
+				<span class="name">Crossy Chicken</span>
+				<span class="desc"
+					>Hop across endless roads and dodge the traffic.</span
+				>
+			</a>
+			<!-- NEW-GAME-CARD: new-game.sh inserts cards above this line -->
+		</div>
+	</body>
 </html>

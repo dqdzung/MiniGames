@@ -402,4 +402,3 @@ new Phaser.Game({
 	},
 	scene: GoldMinerGame,
 });
-

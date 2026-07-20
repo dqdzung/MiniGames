@@ -8,15 +8,15 @@ HTML, CSS, and vanilla JS, with Phaser loaded from a CDN.
 
 ## Games
 
-| Game | Folder | How to play |
-|------|--------|-------------|
-| 🧠 Memory Match | `memory-game/` | Flip cards, find all matching pairs in the fewest moves. |
-| 🎁 Mystery Boxes | `mystery-boxes/` | Pick one of 9 gift boxes; it reveals a prize or a "good luck" wish, then the rest are revealed. |
-| 🧺 Loot Catcher | `loot-catcher/` | Move the basket (mouse/touch or ←/→) to catch rewards and dodge bombs. 5 lives; rarer rewards score more. |
-| 💎 Match 3 | `match-3/` | Swap adjacent gems to line up 3+. Cascades chain. 2-minute timer; lose if time runs out or no moves remain. |
-| 🍉 Fruit Slicer | `fruit-slicer/` | Swipe to slice launched fruit, avoid bombs. 3 lives, 2-minute timer. |
-| 🐔 Chicken Shooter | `chicken-shooter/` | Aim the crosshair and click to shoot flying and bush-peeking chickens; reload with right-click / R. 90-second timer. |
-| ⛏️ Gold Miner | `gold-miner/` | Fire the swinging claw to grab gold, diamonds, and rocks (heavier = slower reel-in); avoid the bomb. 60-second timer. |
+| Game               | Folder             | How to play                                                                                                           |
+| ------------------ | ------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| 🧠 Memory Match    | `memory-game/`     | Flip cards, find all matching pairs in the fewest moves.                                                              |
+| 🎁 Mystery Boxes   | `mystery-boxes/`   | Pick one of 9 gift boxes; it reveals a prize or a "good luck" wish, then the rest are revealed.                       |
+| 🧺 Loot Catcher    | `loot-catcher/`    | Move the basket (mouse/touch or ←/→) to catch rewards and dodge bombs. 5 lives; rarer rewards score more.             |
+| 💎 Match 3         | `match-3/`         | Swap adjacent gems to line up 3+. Cascades chain. 2-minute timer; lose if time runs out or no moves remain.           |
+| 🍉 Fruit Slicer    | `fruit-slicer/`    | Swipe to slice launched fruit, avoid bombs. 3 lives, 2-minute timer.                                                  |
+| 🐔 Chicken Shooter | `chicken-shooter/` | Aim the crosshair and click to shoot flying and bush-peeking chickens; reload with right-click / R. 90-second timer.  |
+| ⛏️ Gold Miner      | `gold-miner/`      | Fire the swinging claw to grab gold, diamonds, and rocks (heavier = slower reel-in); avoid the bomb. 60-second timer. |
 
 ## Tech stack
 
@@ -64,7 +64,7 @@ works, but the portal's relative links need it served from the root.
 ## Conventions (shared across games)
 
 - **2× internal resolution.** Each game defines `const S = 2` and multiplies sizes by
-  it, rendering at 2× so Phaser's `Scale.FIT` *downscales* to the viewport (crisp text)
+  it, rendering at 2× so Phaser's `Scale.FIT` _downscales_ to the viewport (crisp text)
   instead of upscaling a small canvas (blurry). One knob per game.
 - **Responsive.** `Scale.FIT` + `CENTER_BOTH` scale the canvas to any screen while
   preserving aspect ratio.
