@@ -9,7 +9,9 @@ const GAME_W = 480 * S;
 const GAME_H = 640 * S;
 
 const GAME_TIME = 30; // seconds
-const POP_INTERVAL = 620; // ms between mole pop attempts
+// One mole pops per interval, so max score = floor(GAME_TIME*1000 / POP_INTERVAL).
+// 595 → 50 pops (50th at 29 750 ms, in-round; 51st at 30 345 ms, after the buzzer).
+const POP_INTERVAL = 595; // ms between mole pop attempts
 const UP_TIME = 850; // ms a mole stays up before ducking on its own
 
 const COLS = [0.22, 0.5, 0.78];
