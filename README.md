@@ -17,6 +17,7 @@ HTML, CSS, and vanilla JS, with Phaser loaded from a CDN.
 | 🍉 Fruit Slicer    | `fruit-slicer/`    | Swipe to slice launched fruit, avoid bombs. 3 lives, 2-minute timer.                                                  |
 | 🐔 Chicken Shooter | `chicken-shooter/` | Aim the crosshair and click to shoot flying and bush-peeking chickens; reload with right-click / R. 90-second timer.  |
 | ⛏️ Gold Miner      | `gold-miner/`      | Fire the swinging claw to grab gold, diamonds, and rocks (heavier = slower reel-in); avoid the bomb. 60-second timer. |
+| 🛣️ Crossy Chicken  | `crossy-chicken/`  | Hop the chicken across endless lanes of traffic (swipe, arrow keys / WASD, or on-screen buttons); dodge the cars.     |
 
 ## Tech stack
 
