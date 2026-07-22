@@ -25,11 +25,10 @@ class WhackAMoleGame extends Phaser.Scene {
 		this.timeLeft = GAME_TIME;
 		this.over = false;
 
-		// field: sky band on top, grass below
+		// field: thin sky band on top, grass fills the rest
+		const skyH = GAME_H * 0.16;
 		this.add.rectangle(0, 0, GAME_W, GAME_H, 0x8fd0ef).setOrigin(0);
-		this.add
-			.rectangle(0, GAME_H * 0.28, GAME_W, GAME_H * 0.72, 0x5fae3a)
-			.setOrigin(0);
+		this.add.rectangle(0, skyH, GAME_W, GAME_H - skyH, 0x5fae3a).setOrigin(0);
 
 		// holes
 		this.holes = [];
