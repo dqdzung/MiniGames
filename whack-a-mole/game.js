@@ -9,10 +9,12 @@ const GAME_W = 480 * S;
 const GAME_H = 640 * S;
 
 const GAME_TIME = 30; // seconds
-// One mole pops per interval, so max score = floor(GAME_TIME*1000 / POP_INTERVAL).
-// 595 → 50 pops (50th at 29 750 ms, in-round; 51st at 30 345 ms, after the buzzer).
-const POP_INTERVAL = 595; // ms between mole pop attempts
-const UP_TIME = 850; // ms a mole stays up before ducking on its own
+// One thing pops per interval; 595 → 50 pops (50th at 29 750 ms, in-round; 51st after the buzzer).
+// With bombs, some pops aren't scorable moles, so the mole-only ceiling is below 50 and varies.
+const POP_INTERVAL = 595; // ms between pop attempts
+const UP_TIME = 650; // ms a mole stays up before ducking on its own
+const BOMB_CHANCE = 0.15; // fraction of pops that are bombs instead of moles
+const BOMB_PENALTY = 3; // seconds knocked off the clock for whacking a bomb (ends the game at 0)
 
 const COLS = [0.22, 0.5, 0.78];
 const ROWS = [0.44, 0.63, 0.82];
@@ -73,7 +75,9 @@ class WhackAMoleGame extends Phaser.Scene {
 		this.input.on("pointerdown", (p) => {
 			place(p);
 			this.swing();
-			if (this.over) this.scene.restart();
+			// canRestart gates out the same click that ended the game (a bomb whack sets
+			// this.over via its own handler, which fires just before this one)
+			if (this.over && this.canRestart) this.scene.restart();
 		});
 
 		// timers
@@ -118,6 +122,7 @@ class WhackAMoleGame extends Phaser.Scene {
 			downY,
 			up: false,
 			moving: false,
+			bomb: false,
 			duck: null,
 		};
 		// hit area a bit larger than the mole glyph, for forgiving whacks
@@ -140,6 +145,8 @@ class WhackAMoleGame extends Phaser.Scene {
 		const down = this.holes.filter((h) => !h.up && !h.moving);
 		if (!down.length) return;
 		const h = Phaser.Utils.Array.GetRandom(down);
+		h.bomb = Math.random() < BOMB_CHANCE;
+		h.mole.setText(h.bomb ? "💣" : "🐹");
 		h.up = true;
 		h.moving = true;
 		this.tweens.add({
@@ -168,15 +175,80 @@ class WhackAMoleGame extends Phaser.Scene {
 
 	whack(h) {
 		if (this.over || !h.up) return;
+		if (h.bomb) {
+			this.timeLeft = Math.max(0, this.timeLeft - BOMB_PENALTY); // lose seconds
+			this.timeText.setText("Time: " + this.timeLeft);
+			this.boom(h.x, h.upY, "💥", 56); // bomb explosion
+			this.penaltyPop(h.x, h.upY); // "-Ns" rises from behind the blast
+			this.cameras.main.shake(180, 0.012);
+			this.duckHole(h);
+			if (this.timeLeft <= 0) this.endGame();
+			return;
+		}
 		this.score += 1;
 		this.scoreText.setText("Score: " + this.score);
-		this.boom(h.x, h.upY);
-		this.duckHole(h);
+		this.stun(h);
 	}
 
-	boom(x, y) {
+	// whacked mole: a dizzy 💫 pops up out of its head (same easing as a mole leaving the
+	// hole), then mole + stars fade out together
+	stun(h) {
+		if (h.duck) h.duck.remove();
+		h.up = false;
+		h.moving = true; // keep it out of the pop pool until the fade finishes
+		const dizzy = this.add
+			.text(h.x, h.upY - 6 * S, "💫", { fontSize: px(24), padding: { y: 8 } })
+			.setOrigin(0.45)
+			.setAngle(-45) // lay the swoosh horizontal instead of angled
+			.setDepth(20);
+		this.tweens.add({
+			targets: dizzy,
+			y: h.upY - 40 * S, // rise above the head
+			duration: 150,
+			ease: "Back.easeOut",
+		});
+		this.tweens.add({
+			targets: [h.mole, dizzy],
+			alpha: 0,
+			duration: 160,
+			delay: 110, // let the pop read before fading
+			onComplete: () => {
+				dizzy.destroy();
+				h.mole.setAlpha(1).setY(h.downY); // reset for reuse (still hidden below the rim)
+				h.moving = false;
+			},
+		});
+	}
+
+	// "-Ns" penalty label pops up out of the bomb (behind the explosion), then rises and fades
+	penaltyPop(x, y) {
+		const t = this.add
+			.text(x, y - 6 * S, "-" + BOMB_PENALTY + "s", {
+				fontSize: px(22),
+				color: "#ff5a5a",
+				fontStyle: "bold",
+				padding: { y: 6 },
+			})
+			.setOrigin(0.5)
+			.setDepth(70); // behind the explosion (depth 80)
+		this.tweens.add({
+			targets: t,
+			y: y - 44 * S, // rise above the blast
+			duration: 150,
+			ease: "Back.easeOut",
+		});
+		this.tweens.add({
+			targets: t,
+			alpha: 0,
+			duration: 300,
+			delay: 130,
+			onComplete: () => t.destroy(),
+		});
+	}
+
+	boom(x, y, symbol, size = 40) {
 		const b = this.add
-			.text(x, y, "💥", { fontSize: px(40), padding: { y: 8 } })
+			.text(x, y, symbol, { fontSize: px(size), padding: { y: 8 } })
 			.setOrigin(0.5)
 			.setDepth(80);
 		this.tweens.add({
@@ -210,6 +282,9 @@ class WhackAMoleGame extends Phaser.Scene {
 
 	endGame() {
 		this.over = true;
+		// block restart briefly so the click that ended the game (e.g. a bomb whack) can't restart it
+		this.canRestart = false;
+		this.time.delayedCall(350, () => (this.canRestart = true));
 		this.popTimer.remove();
 		this.holes.forEach((h) => this.duckHole(h));
 		this.add
