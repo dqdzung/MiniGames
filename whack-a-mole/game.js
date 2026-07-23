@@ -13,7 +13,7 @@ const GAME_TIME = 30; // seconds
 // With bombs, some pops aren't scorable moles, so the mole-only ceiling is below 50 and varies.
 const POP_INTERVAL = 595; // ms between pop attempts
 const UP_TIME = 650; // ms a mole stays up before ducking on its own
-const BOMB_CHANCE = 0.15; // fraction of pops that are bombs instead of moles
+const BOMB_CHANCE = 0.20; // fraction of pops that are bombs instead of moles
 const BOMB_PENALTY = 3; // seconds knocked off the clock for whacking a bomb (ends the game at 0)
 
 // symmetric 3×3 grid, as fractions of the grass square (same offsets on both axes → centered);
