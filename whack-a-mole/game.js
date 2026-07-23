@@ -6,7 +6,7 @@ const S = 2;
 const px = (n) => `${n * S}px`;
 
 const GAME_W = 480 * S;
-const GAME_H = 640 * S;
+const GAME_H = 540 * S; // grass below is a square (GAME_W tall); the extra height is a thin sky band
 
 const GAME_TIME = 30; // seconds
 // One thing pops per interval; 595 → 50 pops (50th at 29 750 ms, in-round; 51st after the buzzer).
@@ -16,8 +16,9 @@ const UP_TIME = 650; // ms a mole stays up before ducking on its own
 const BOMB_CHANCE = 0.15; // fraction of pops that are bombs instead of moles
 const BOMB_PENALTY = 3; // seconds knocked off the clock for whacking a bomb (ends the game at 0)
 
-const COLS = [0.22, 0.5, 0.78];
-const ROWS = [0.44, 0.63, 0.82];
+// symmetric 3×3 grid, as fractions of the grass square (same offsets on both axes → centered);
+// 1/4, 1/2, 3/4 → edge margins equal the gaps between holes, so they're evenly spaced
+const GRID = [0.25, 0.5, 0.75];
 
 class WhackAMoleGame extends Phaser.Scene {
 	create() {
@@ -25,15 +26,16 @@ class WhackAMoleGame extends Phaser.Scene {
 		this.timeLeft = GAME_TIME;
 		this.over = false;
 
-		// field: thin sky band on top, grass fills the rest
-		const skyH = GAME_H * 0.16;
+		// field: sky on top, grass fills the rest as a square (its height == the canvas width)
+		const skyH = GAME_H - GAME_W;
 		this.add.rectangle(0, 0, GAME_W, GAME_H, 0x8fd0ef).setOrigin(0);
 		this.add.rectangle(0, skyH, GAME_W, GAME_H - skyH, 0x5fae3a).setOrigin(0);
 
 		// holes
 		this.holes = [];
-		for (const ry of ROWS)
-			for (const cx of COLS) this.makeHole(cx * GAME_W, ry * GAME_H);
+		for (const ry of GRID)
+			for (const cx of GRID)
+				this.makeHole(cx * GAME_W, skyH + ry * GAME_W);
 
 		// HUD
 		this.scoreText = this.add
